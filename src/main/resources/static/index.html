@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Calculator</title>
+    </head>
+
+    <body>
+
+    <style>
+        *{
+            font-family:Arial;
+            align-items:center;
+            text-align:center;
+        }
+        form{
+            margin:5%;
+            background-color:#dadada;
+            display:flex;
+            flex-direction:column;
+            border-radius:15px;
+        }
+
+        label{
+            margin-top:15px;
+            margin-bottom:5px;
+        }
+
+        input, select{
+            width: 50%;
+            height:25px;
+            border-radius:5px;
+            border:1px solid black;
+        }
+
+        #numero1{
+            color:blue;
+        }
+
+        #numero2{
+            color:red;
+        }
+
+        button{
+            width:150px;
+            height: 50px;
+            background-color:green;
+            color:black;
+            border-radius: 5px;
+            margin:15px;
+            filter: drop-shadow(5px 5px 4px #555555);
+            border:none;
+        }
+
+        button:hover{
+            cursor:pointer;
+            background-color:#3aff00;
+        }
+
+        #resultado{
+            color:green;
+        }
+
+
+    </style>
+    <script>
+        async function enviarFormulario(event) {
+            event.preventDefault();
+            let n1= parseFloat(document.getElementById("numero1").value);
+            let n2= parseFloat(document.getElementById("numero2").value);
+            let operacion= document.getElementById("operacion").value;
+
+            let objetoJSON = {
+                        n1 : n1,
+                        n2 : n2,
+                        operation:operacion
+                        }
+
+            try{
+                await fetch('http://localhost:8080/calculator/calculate',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type':'application/json'
+                    },
+                    body : JSON.stringify(objetoJSON)
+                })
+                .then(response => response.json())
+                .then(
+                data => {document.getElementById("resultado").textContent=data})
+                }catch(Error){
+                    document.getElementById("resultado").textContent= "ERROR";
+                    console.log(objetoJSON);
+                }
+     }
+    </script>
+        <form>
+            <label for="numero1">Número 1</label>
+            <input type="number" name="numero1" id="numero1" plceholder="Selecciona el primer dígito" required>
+
+            <label for="numero2">Número 2</label>
+            <input type="number" name="numero2" id="numero2" plceholder="Selecciona el segundo dígito" required>
+
+            <label for="operacion">Operación</label>
+            <select id="operacion" name="select" required>
+                <option class="option" value="sumar">Sumar</option>
+                <option class="option" value="restar">Restar</option>
+                <option class="option" value="multiplicar">Multiplicar</option>
+                <option class="option" value="dividir">Dividir</option>
+            </select>
+
+            <button onclick="enviarFormulario(event)">Enviar</button>
+        </form>
+
+        <h2>Resultado: <span id="resultado"></span></h2>
+
+
+    </body>
+</html>
